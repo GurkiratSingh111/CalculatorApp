@@ -1,105 +1,109 @@
 import "./styles.css"
-import { useReducer, useState } from "react";
-
-// const ACTION = {
-//   ADD_DIGIT: 'add_digits',
-//   clear: 'clear'
-// }
-// function reducer(state, { type, payload }) {
-
-
-
-// }
+import { useReducer } from "react";
+import { reducer } from './reducer'
+const initialState = {
+  currentOperand: '',
+  previousOperand: '',
+  operator: ''
+}
 function App() {
-  // const [{currentOperand, previousOperand, operation}, dispatch] = useReducer(reducer, {})
-  const [currentOperand, setCurrentOperand] = useState('');
-  const [previousOperand, setPreviousOperand] = useState('');
-  const [operator, setOperator] = useState('');
+  const [state, dispatch] = useReducer(reducer, initialState);
+  // const [currentOperand, setCurrentOperand] = useState('');
+  // const [previousOperand, setPreviousOperand] = useState('');
+  // const [operator, setOperator] = useState('');
 
   const onClickSetOperator = (e) => {
-    if (operator !== '' && currentOperand === '' && previousOperand !== '') {
-      setOperator(e.target.value);
+    if (state.operator !== '' && state.currentOperand === '' && state.previousOperand !== '') {
+      dispatch({ type: "CHANGE_OPERATOR", payload: e.target.value })
     }
-    else if (operator !== '') {
-      const prev = Number.parseFloat(previousOperand);
-      const curr = Number.parseFloat(currentOperand);
-      if (operator === '/') {
-        setPreviousOperand(prev / curr);
-      }
-      else if (operator === 'X') {
-        setPreviousOperand(prev * curr);
-      }
-      else if (operator === '+') {
-        setPreviousOperand(prev + curr);
-      }
-      else if (operator === '-') {
-        setPreviousOperand(prev - curr);
-      }
-      setOperator(e.target.value);
-      console.log(currentOperand);
-      setCurrentOperand('');
+    else if (state.operator !== '' && state.currentOperand !== '' && state.previousOperand !== '') {
+      dispatch({ type: 'OPERATION_ON_CHANGE_OPERATOR', payload: e.target.value })
+
+      // const prev = Number.parseFloat(previousOperand);
+      // const curr = Number.parseFloat(currentOperand);
+
+      // if (operator === '/') {
+      //   setPreviousOperand(prev / curr);
+      // }
+      // else if (operator === 'X') {
+      //   setPreviousOperand(prev * curr);
+      // }
+      // else if (operator === '+') {
+      //   setPreviousOperand(prev + curr);
+      // }
+      // else if (operator === '-') {
+      //   setPreviousOperand(prev - curr);
+      // }
+      // setOperator(e.target.value);
+      // console.log(currentOperand);
+      // setCurrentOperand('');
     }
     else {
-      setPreviousOperand(currentOperand);
-      setCurrentOperand('');
-      setOperator(e.target.value);
+      dispatch({ type: "SET_OPERATOR", payload: e.target.value })
+      // setPreviousOperand(currentOperand);
+      // setCurrentOperand('');
+      // setOperator(e.target.value);
     }
   }
   const onClickSetOperand = (e) => {
-    setCurrentOperand((prev) => {
-      return prev + e.target.value;
-    })
+    dispatch({ type: 'CONCATENATING_CURRENT_OPERAND', payload: e.target.value })
+    // setCurrentOperand((prev) => {
+    //   return prev + e.target.value;
+    // })
   }
   const clearLastEntry = () => {
-    setCurrentOperand((prev) => {
-      let str;
-      let temp;
-      str = prev.toString();
-      if (str.length !== 0) {
-        temp = str.slice(0, str.length - 1);
-        return temp;
-      }
-    })
+    dispatch({ type: "DELETING_LAST_ENTRY" });
+    // setCurrentOperand((prev) => {
+    //   let str;
+    //   let temp;
+    //   str = prev.toString();
+    //   if (str.length !== 0) {
+    //     temp = str.slice(0, str.length - 1);
+    //     return temp;
+    //   }
+    // })
   }
   const deleteAll = () => {
-    setCurrentOperand('');
-    setOperator('');
-    setPreviousOperand('');
+    dispatch({ type: "DELETE_ALL" });
+
+    // setCurrentOperand('');
+    // setOperator('');
+    // setPreviousOperand('');
   }
   const setResult = () => {
-    if (previousOperand !== '' && currentOperand !== '' && operator !== '') {
-      const prev = Number.parseFloat(previousOperand);
-      const curr = Number.parseFloat(currentOperand);
-      if (operator === '/') {
-        setCurrentOperand(prev / curr);
-      }
-      else if (operator === 'X') {
-        setCurrentOperand(prev * curr);
-      }
-      else if (operator === '+') {
-        setCurrentOperand(prev + curr);
-      }
-      else if (operator === '-') {
-        setCurrentOperand(prev - curr);
-      }
-      console.log(currentOperand);
-      setPreviousOperand('');
-      setOperator('')
+    if (state.previousOperand !== '' && state.currentOperand !== '' && state.operator !== '') {
+      dispatch({ type: "DISPLAY_RESULT" })
+      // const prev = Number.parseFloat(previousOperand);
+      // const curr = Number.parseFloat(currentOperand);
+      // if (operator === '/') {
+      //   setCurrentOperand(prev / curr);
+      // }
+      // else if (operator === 'X') {
+      //   setCurrentOperand(prev * curr);
+      // }
+      // else if (operator === '+') {
+      //   setCurrentOperand(prev + curr);
+      // }
+      // else if (operator === '-') {
+      //   setCurrentOperand(prev - curr);
+      // }
+      // setPreviousOperand('');
+      // setOperator('')
     }
   }
   return (
     <div className='calculator-grid'>
       <div className='output'>
-        <div className='previous-operand'>{previousOperand}{operator}</div>
-        <div className='current-operand'>{currentOperand}</div>
+        <div className='previous-operand'>{state.previousOperand}{state.operator}</div>
+        <div className='current-operand'>{state.currentOperand}</div>
       </div>
       <button className='span-two' onClick={deleteAll}>AC</button>
       <button onClick={clearLastEntry}>DEL</button>
-      <button onClick={onClickSetOperator} value="/">/</button>
+      <button onClick={onClickSetOperator} value="÷">÷</button>
       <button onClick={onClickSetOperand} value="1">1</button>
       <button onClick={onClickSetOperand} value="2">2</button>
       <button onClick={onClickSetOperand} value="3">3</button>
-      <button onClick={onClickSetOperator} value="X">X</button>
+      <button onClick={onClickSetOperator} value="X">x</button>
       <button onClick={onClickSetOperand} value="4">4</button>
       <button onClick={onClickSetOperand} value="5">5</button>
       <button onClick={onClickSetOperand} value="6">6</button>
