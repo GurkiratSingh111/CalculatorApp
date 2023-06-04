@@ -17,9 +17,33 @@ function App() {
   const [operator, setOperator] = useState('');
 
   const onClickSetOperator = (e) => {
-    setPreviousOperand(currentOperand);
-    setCurrentOperand('');
-    setOperator(e.target.value);
+    if (operator !== '' && currentOperand === '' && previousOperand !== '') {
+      setOperator(e.target.value);
+    }
+    else if (operator !== '') {
+      const prev = Number.parseFloat(previousOperand);
+      const curr = Number.parseFloat(currentOperand);
+      if (operator === '/') {
+        setPreviousOperand(prev / curr);
+      }
+      else if (operator === 'X') {
+        setPreviousOperand(prev * curr);
+      }
+      else if (operator === '+') {
+        setPreviousOperand(prev + curr);
+      }
+      else if (operator === '-') {
+        setPreviousOperand(prev - curr);
+      }
+      setOperator(e.target.value);
+      console.log(currentOperand);
+      setCurrentOperand('');
+    }
+    else {
+      setPreviousOperand(currentOperand);
+      setCurrentOperand('');
+      setOperator(e.target.value);
+    }
   }
   const onClickSetOperand = (e) => {
     setCurrentOperand((prev) => {
@@ -28,8 +52,13 @@ function App() {
   }
   const clearLastEntry = () => {
     setCurrentOperand((prev) => {
-      const str = prev.slice(0, prev.length - 1);
-      return str;
+      let str;
+      let temp;
+      str = prev.toString();
+      if (str.length !== 0) {
+        temp = str.slice(0, str.length - 1);
+        return temp;
+      }
     })
   }
   const deleteAll = () => {
@@ -38,23 +67,25 @@ function App() {
     setPreviousOperand('');
   }
   const setResult = () => {
-    const prev = Number.parseFloat(previousOperand);
-
-    const curr = Number.parseFloat(currentOperand);
-    if (operator === '/') {
-      setCurrentOperand(prev / curr);
+    if (previousOperand !== '' && currentOperand !== '' && operator !== '') {
+      const prev = Number.parseFloat(previousOperand);
+      const curr = Number.parseFloat(currentOperand);
+      if (operator === '/') {
+        setCurrentOperand(prev / curr);
+      }
+      else if (operator === 'X') {
+        setCurrentOperand(prev * curr);
+      }
+      else if (operator === '+') {
+        setCurrentOperand(prev + curr);
+      }
+      else if (operator === '-') {
+        setCurrentOperand(prev - curr);
+      }
+      console.log(currentOperand);
+      setPreviousOperand('');
+      setOperator('')
     }
-    else if (operator === '*') {
-      setCurrentOperand(prev * curr);
-    }
-    else if (operator === '+') {
-      setCurrentOperand(prev + curr);
-    }
-    else if (operator === '-') {
-      setCurrentOperand(prev - curr);
-    }
-    setPreviousOperand('');
-    setOperator('')
   }
   return (
     <div className='calculator-grid'>
@@ -62,13 +93,13 @@ function App() {
         <div className='previous-operand'>{previousOperand}{operator}</div>
         <div className='current-operand'>{currentOperand}</div>
       </div>
-      <button className='span-two' onClick={clearLastEntry}>AC</button>
-      <button onClick={deleteAll}>DEL</button>
+      <button className='span-two' onClick={deleteAll}>AC</button>
+      <button onClick={clearLastEntry}>DEL</button>
       <button onClick={onClickSetOperator} value="/">/</button>
       <button onClick={onClickSetOperand} value="1">1</button>
       <button onClick={onClickSetOperand} value="2">2</button>
       <button onClick={onClickSetOperand} value="3">3</button>
-      <button onClick={onClickSetOperator} value="*">*</button>
+      <button onClick={onClickSetOperator} value="X">X</button>
       <button onClick={onClickSetOperand} value="4">4</button>
       <button onClick={onClickSetOperand} value="5">5</button>
       <button onClick={onClickSetOperand} value="6">6</button>
